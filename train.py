@@ -16,9 +16,9 @@ def init_trainer(savedir: FilePath, **kwargs) -> L.Trainer:
         EarlyStopping(
             monitor=monitor,
             min_delta=0.01,
-            patience=3,
+            patience=5,
             stopping_threshold=0.1,
-            divergence_threshold=0.75,  # random guessing is about 0.693
+            divergence_threshold=1.0,
         ),
         ModelCheckpoint(
             monitor=monitor,
