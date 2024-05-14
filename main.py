@@ -113,6 +113,7 @@ class Args:
     output: Path
     logdir: Path
     dataset: Optional[str]
+    dummy: bool
 
     @classmethod
     def from_args(cls, args: argparse.Namespace) -> "Args":
@@ -152,6 +153,11 @@ class Args:
             metavar="STR",
             help="Dataset name if cannot be inferred from file name",
         )
+        parser.add_argument(
+            "--dummy",
+            action="store_true",
+            help="Process entire graph at once instead of loading edges in batches",
+        )
 
         return cls.from_args(parser.parse_args())
 
@@ -186,13 +192,13 @@ def main():
     else:
         trialer = Trialer(test_share_weights=True)
 
+    L.seed_everything(123)
     with open(args.output, "w") as fp:
         fp.write("\t".join(OUTPUT_COLUMNS) + "\n")
         for trial in trialer:
             if (in_dim, in_dim) < trial.decoder_hidden_dims:
                 continue
 
-            L.seed_everything(123)
             trainer = init_trainer(args.logdir)
 
             test_results = {
@@ -209,6 +215,7 @@ def main():
                 {
                     "file": file,
                     "disjoint_train_ratio": trial.disjoint_train_ratio,
+                    "dummy": args.dummy,
                 }
             )
 
