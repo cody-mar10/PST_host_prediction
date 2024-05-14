@@ -249,16 +249,19 @@ class GNNModule(L.LightningModule):
         return self.model(data.x_dict, data.edge_index_dict, edge_label_index)
 
     def train_val_step(self, batch: HeteroData, batch_idx: int, stage: str) -> Tensor:
-        pred = self(batch, batch["infects"].edge_label_index)
-        targets = batch["infects"].edge_label
+        edge_data = batch["infects"]
+        edge_label_index: Tensor = edge_data.edge_label_index
+        
+        pred: Tensor = self(batch, edge_label_index)
+        targets: Tensor = edge_data.edge_label
 
-        mask = batch["virus"].train_mask[batch["infects"].edge_label_index[0]]
+        mask: Tensor = batch["virus"].train_mask[edge_label_index[0]]
 
         pred = pred[mask]
         targets = targets[mask]
 
         ### log metrics
-        batch_size = batch["infects"].edge_label.numel()
+        batch_size = targets.numel()
         loss = self.criterion(pred, targets)
         accuracy = self.accuracy(pred, targets.long())
 
@@ -270,7 +273,7 @@ class GNNModule(L.LightningModule):
             prog_bar=True,
             batch_size=batch_size,
             logger=True,
-            on_step=None,
+            on_step=False,
             on_epoch=True,
         )
 
@@ -278,9 +281,6 @@ class GNNModule(L.LightningModule):
 
     def training_step(self, batch: HeteroData, batch_idx: int) -> Tensor:
         return self.train_val_step(batch, batch_idx, "train")
-
-    def on_train_epoch_end(self):
-        self.log("train_accuracy_epoch", self.accuracy, prog_bar=True)
 
     def validation_step(self, batch: HeteroData, batch_idx: int) -> Tensor:
         return self.train_val_step(batch, batch_idx, "val")
