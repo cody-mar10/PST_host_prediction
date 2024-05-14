@@ -24,7 +24,7 @@ def init_trainer(savedir: FilePath, **kwargs) -> L.Trainer:
             monitor=monitor,
             filename="{epoch}_{val_loss:.3f}",
             save_last=True,
-            save_top_k=3,
+            save_top_k=1,
             mode="min",
             every_n_epochs=1,
         ),
