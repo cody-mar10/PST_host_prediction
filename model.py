@@ -292,6 +292,7 @@ class GNNModule(L.LightningModule):
         batch_idx: Optional[int] = None,
         negative_edge_sampling: bool = True,
     ) -> dict[str, float]:
+        device = batch["infects"].edge_index.device
         if negative_edge_sampling:
             # this will generate the same number of negative edges as positive edges
             # this is necessary since only predicting with the positive edges will
@@ -299,19 +300,21 @@ class GNNModule(L.LightningModule):
             negative_edge_index = negative_sampling(
                 edge_index=batch["infects"].edge_index,
                 num_nodes=(batch["virus"].x.size(0), batch["host"].x.size(0)),
-            )
+            ).to(device)
 
             edge_label_index = torch.cat(
                 (batch["infects"].edge_index, negative_edge_index), dim=-1
             )
-            edge_label = torch.tensor([1, 0]).repeat_interleave(
+            edge_label = torch.tensor([1, 0], device=device).repeat_interleave(
                 edge_label_index.size(1) // 2
             )
 
             assert edge_label.size(0) == edge_label_index.size(1)
         else:
             edge_label_index = batch["infects"].edge_index
-            edge_label = torch.ones((edge_label_index.size(1),), dtype=torch.long)
+            edge_label = torch.ones(
+                (edge_label_index.size(1),), dtype=torch.long, device=device
+            )
 
         pred = self(batch, edge_label_index).squeeze()
         mask = batch["virus"].test_mask[edge_label_index[0]]
