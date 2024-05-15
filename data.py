@@ -187,6 +187,16 @@ class GraphDataModule(L.LightningDataModule):
 
         return val_dataloader
 
+    def test_dataloader(self) -> DataLoader:
+        test_dataloader = DataLoader(
+            DummyDataset(data=self.test_data),
+            batch_size=1,
+            shuffle=False,
+            collate_fn=self._collate,
+        )
+
+        return test_dataloader
+
     @property
     def node_dim(self) -> int:
         return int(self.data["virus"].x.size(-1))

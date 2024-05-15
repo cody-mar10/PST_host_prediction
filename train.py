@@ -9,17 +9,12 @@ from model import GNNConfig, GNNModule
 FilePath = str | Path
 
 
-def init_trainer(savedir: FilePath, **kwargs) -> L.Trainer:
+def init_trainer(
+    savedir: FilePath, early_stopping: bool = False, **kwargs
+) -> L.Trainer:
     monitor = "val_loss"
 
     callbacks: list[Callback] = [
-        EarlyStopping(
-            monitor=monitor,
-            min_delta=0.01,
-            patience=5,
-            stopping_threshold=0.1,
-            divergence_threshold=1.0,
-        ),
         ModelCheckpoint(
             monitor=monitor,
             filename="{epoch}_{val_loss:.3f}",
@@ -27,11 +22,26 @@ def init_trainer(savedir: FilePath, **kwargs) -> L.Trainer:
             save_top_k=1,
             mode="min",
             every_n_epochs=1,
-        ),
+        )
     ]
 
+    if early_stopping:
+        callbacks.append(
+            EarlyStopping(
+                monitor=monitor,
+                min_delta=0.01,
+                patience=5,
+                stopping_threshold=0.1,
+                divergence_threshold=1.0,
+            )
+        )
+
+        max_epochs = 250
+    else:
+        max_epochs = 75
+
     trainer = L.Trainer(
-        max_epochs=250,
+        max_epochs=max_epochs,
         callbacks=callbacks,
         accelerator="auto",
         devices="auto",
@@ -51,7 +61,8 @@ def train(
     model = GNNModule(model_config, datamodule.data.metadata())
 
     trainer.fit(model, datamodule=datamodule)
-    test_results = model.test_step(datamodule.data, negative_edge_sampling=True)
+
+    test_results: dict[str, float] = trainer.test(model, datamodule=datamodule)[0]  # type: ignore
 
     test_results["n_parameters"] = model.num_parameters()
 

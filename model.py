@@ -251,7 +251,7 @@ class GNNModule(L.LightningModule):
     def train_val_step(self, batch: HeteroData, batch_idx: int, stage: str) -> Tensor:
         edge_data = batch["infects"]
         edge_label_index: Tensor = edge_data.edge_label_index
-        
+
         pred: Tensor = self(batch, edge_label_index)
         targets: Tensor = edge_data.edge_label
 
@@ -324,6 +324,8 @@ class GNNModule(L.LightningModule):
             "accuracy": self.accuracy(pred, targets).item(),
             "auprc": self.auprc(pred, targets).item(),
         }
+
+        self.log_dict(results, batch_size=1)
 
         return results
 

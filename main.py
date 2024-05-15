@@ -115,6 +115,7 @@ class Args:
     logdir: Path
     dataset: Optional[str]
     dummy: bool
+    early_stopping: bool
 
     @classmethod
     def from_args(cls, args: argparse.Namespace) -> "Args":
@@ -158,6 +159,11 @@ class Args:
             "--dummy",
             action="store_true",
             help="Process entire graph at once instead of loading edges in batches",
+        )
+        parser.add_argument(
+            "--early-stopping",
+            action="store_true",
+            help="Enable bad trial early stopping based on validation loss",
         )
 
         return cls.from_args(parser.parse_args())
