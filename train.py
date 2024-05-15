@@ -18,7 +18,7 @@ def init_trainer(
         ModelCheckpoint(
             monitor=monitor,
             filename="{epoch}_{val_loss:.3f}",
-            save_last=True,
+            save_last=False,
             save_top_k=1,
             mode="min",
             every_n_epochs=1,
