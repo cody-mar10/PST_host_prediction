@@ -34,24 +34,25 @@ class Trialer:
         test_share_weights: bool = True,
     ):
         if dropout is None:
-            dropout = [0.1, 0.25, 0.5]
+            dropout = [0.25]
 
         if encoder_n_layers is None:
-            encoder_n_layers = range(1, 6)
+            encoder_n_layers = range(1, 4)
 
         if decoder_hidden_dims is None:
+            decoder_hidden_dims_opts = [512, 256, 128, 64, 32]
+
             decoder_hidden_dims = [
                 (dim1, dim2)
-                for dim1 in [512, 256, 128, 64, 32]
-                for dim2 in [256, 128, 64, 32, 16]
-                if dim1 >= dim2
+                for dim1, dim2 in product(decoder_hidden_dims_opts, repeat=2)
+                if dim1 > dim2
             ]
 
         if lr is None:
-            lr = [1e-4, 5e-4, 1e-3, 5e-3]
+            lr = [5e-4, 1e-3, 5e-3]
 
         if disjoint_train_ratio is None:
-            disjoint_train_ratio = [0.0, 0.1, 0.2, 0.3]
+            disjoint_train_ratio = [0.0, 0.3]
 
         self.options = {
             "dropout": dropout,
