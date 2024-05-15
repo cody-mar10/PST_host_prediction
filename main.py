@@ -206,7 +206,7 @@ def main():
             if (in_dim, in_dim) < trial.decoder_hidden_dims:
                 continue
 
-            trainer = init_trainer(args.logdir)
+            trainer = init_trainer(args.logdir, early_stopping=args.early_stopping)
 
             test_results = {
                 "dataset": dataset,
