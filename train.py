@@ -38,7 +38,7 @@ def init_trainer(
 
         max_epochs = 250
     else:
-        max_epochs = 75
+        max_epochs = 150
 
     trainer = L.Trainer(
         max_epochs=max_epochs,
