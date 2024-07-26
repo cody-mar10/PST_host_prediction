@@ -1,3 +1,5 @@
 *.h5
 __pycache__/
 *_models/
+*.tsv
+*.txt
