@@ -2,8 +2,9 @@
 
 This is code used for the host prediction proof-of-concept analysis associated with the manuscript:
 
-Protein Set Transformer: A protein-based genome language model to power high diversity viromics.
-Cody Martin, Anthony Gitter, and Karthik Anantharaman. bioRxiv, 2024, doi: ADD THIS.
+Protein Set Transformer: A protein-based genome language model to power high diversity viromics.  
+Cody Martin, Anthony Gitter, and Karthik Anantharaman.
+*bioRxiv*, 2024, doi: [10.1101/2024.07.26.605391](https://doi.org/10.1101/2024.07.26.605391).
 
 The parent repository for the PST can be found here: [https://github.com/AnantharamanLab/protein_set_transformer](https://github.com/AnantharamanLab/protein_set_transformer)
 
